@@ -266,11 +266,35 @@ create table PRODUTO (
 /* Table: PROMOCAO                                              */
 /*==============================================================*/
 create table PROMOCAO (
-   PORCENTAGEM          SERIAL                 not null,
-   PROMOCAO_ID          INTEGER                not null,
+   PORCENTAGEM          INTEGER                 not null,
+   PROMOCAO_ID          SERIAL                not null,
    SECAO_ID             INTEGER                 not null,
    constraint PK_PROMOCAO primary key (PROMOCAO_ID),
    constraint FK_PROMOCAO_RELATIONS_SECAO foreign key (SECAO_ID)
       references SECAO (SECAO_ID)
       on delete restrict on update restrict
 );
+
+CREATE FUNCTION insert_promo() RETURNS trigger AS $new_promo$
+	BEGIN
+		update produto
+		set preco_unitario = preco_unitario - ((preco_unitario * NEW.porcentagem) / 100)
+		where NEW.secao_id = secao_id;
+		RETURN NULL;
+	END;
+$new_promo$ LANGUAGE plpgsql;
+
+CREATE TRIGGER new_promo AFTER INSERT ON PROMOCAO
+    FOR EACH ROW EXECUTE FUNCTION insert_promo();
+
+CREATE FUNCTION del_promo() RETURNS trigger AS $del_promo$
+	BEGIN
+		update produto
+		set preco_unitario = (preco_unitario * 100.00) / (100.00 - OLD.porcentagem)
+		where OLD.secao_id = secao_id;
+		RETURN NULL;
+	END;
+$del_promo$ LANGUAGE plpgsql;
+
+CREATE TRIGGER del_promo AFTER DELETE ON PROMOCAO
+    FOR EACH ROW EXECUTE FUNCTION del_promo();
