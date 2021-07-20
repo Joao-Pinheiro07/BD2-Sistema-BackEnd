@@ -1,14 +1,31 @@
 from typing import Optional
 from fastapi import FastAPI
-from gerenteService import getAllGerentes, insertGerente
-from gerenteService import Gerente
+from secaoService import get_all_secoes
+from produtoService import get_produtos_by_secao
+from promocaoService import get_all_promo, insert_promo, Promocao, delete_promo
+
 app = FastAPI()
 
 
-@app.get("/gerente")
-def read_item():
-    return getAllGerentes()
+@app.get("/secao")
+def get_secao():
+    return get_all_secoes()
 
-@app.post("/gerente/")
-def create_gerente(gerente: Gerente):
-    return insertGerente(gerente)
+@app.get("/produto/{secao_id}")
+def get_produto(secao_id: int):
+    return get_produtos_by_secao(secao_id)
+
+@app.get("/promocao")
+def get_all_promos():
+    return get_all_promo()
+
+@app.post("/promocao")
+def new_promo(promocao: Promocao):
+    return insert_promo(promocao)
+
+@app.delete("/promocao/{promoId}")
+def del_promo(promo_id: int):
+    return delete_promo(promo_id)
+
+
+
