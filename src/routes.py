@@ -3,9 +3,18 @@ from fastapi import FastAPI
 from secaoService import get_all_secoes
 from produtoService import get_produtos_by_secao
 from promocaoService import get_all_promo, insert_promo, Promocao, delete_promo
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/secao")
 def get_secao():
