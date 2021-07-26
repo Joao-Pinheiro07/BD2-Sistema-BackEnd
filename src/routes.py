@@ -32,7 +32,7 @@ def get_all_promos():
 def new_promo(promocao: Promocao):
     return insert_promo(promocao)
 
-@app.delete("/promocao/{promoId}")
+@app.delete("/promocao/{promo_id}")
 def del_promo(promo_id: int):
     return delete_promo(promo_id)
 
